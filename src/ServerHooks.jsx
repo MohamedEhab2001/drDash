@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const baseUrl = "https://api.dolphineg.net";
+const baseUrl = "https://ac2f-197-43-66-245.ngrok-free.app";
 
 export const useProduct = () => {
   const [products, setProducts] = useState([]);

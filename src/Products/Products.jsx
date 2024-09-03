@@ -1,4 +1,3 @@
-// Products/Products.jsx
 import React, { useState } from "react";
 import {
   Typography,
@@ -12,7 +11,10 @@ import {
   Table,
   Image,
   Select,
+  Checkbox,
+  Upload,
 } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import { useProductContext, useCategoryContext } from "../App";
 
 const { Title } = Typography;
@@ -24,11 +26,13 @@ const Products = () => {
   const { categories } = useCategoryContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [fileList, setFileList] = useState([]);
   const [form] = Form.useForm();
 
   const showAddModal = () => {
     setEditProduct(null);
     form.resetFields();
+    setFileList([]);
     setIsModalVisible(true);
   };
 
@@ -42,10 +46,17 @@ const Products = () => {
     form
       .validateFields()
       .then((values) => {
+        const formData = new FormData();
+        for (const key in values) {
+          formData.append(key, values[key]);
+        }
+        if (fileList.length > 0) {
+          formData.append("image", fileList[0].originFileObj);
+        }
         if (editProduct) {
-          updateProduct(editProduct.id, values);
+          updateProduct(editProduct.id, formData);
         } else {
-          addProduct(values);
+          addProduct(formData);
         }
         setIsModalVisible(false);
       })
@@ -56,23 +67,30 @@ const Products = () => {
 
   const handleDelete = (id) => {
     Modal.confirm({
-      title: "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
-      content: "بمجرد الحذف، لا يمكن استرجاع هذا المنتج.",
-      okText: "نعم",
-      cancelText: "لا",
+      title: "Are you sure you want to delete this product?",
+      content: "Once deleted, you cannot recover this product.",
+      okText: "Yes",
+      cancelText: "No",
       onOk: () => {
         deleteProduct(id);
       },
     });
   };
 
+  const handleUploadChange = ({ fileList }) => {
+    setFileList(fileList.slice(-1)); // Only keep the last uploaded file
+  };
+
   if (loading) return <Spin size="large" />;
   if (error)
     return (
-      <Alert message="خطأ" description="فشل في تحميل المنتجات." type="error" />
+      <Alert
+        message="Error"
+        description="Failed to load products."
+        type="error"
+      />
     );
 
-  // Map category ID to name
   const categoryMap = categories.reduce((acc, category) => {
     acc[category.id] = category.name;
     return acc;
@@ -80,47 +98,44 @@ const Products = () => {
 
   const columns = [
     {
-      title: "الصورة",
-      dataIndex: "img",
-      key: "img",
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
       render: (img) => <Image width={100} src={img} />,
     },
     {
-      title: "الاسم",
-      dataIndex: "name",
-      key: "name",
+      title: "English Name",
+      dataIndex: "en_name",
+      key: "en_name",
     },
     {
-      title: "العدد",
-      dataIndex: "count",
-      key: "count",
+      title: "Russian Name",
+      dataIndex: "rs_name",
+      key: "rs_name",
     },
     {
-      title: "التصنيف",
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Category",
       dataIndex: "category_id",
       key: "category_id",
-      render: (categoryId) => categoryMap[categoryId] || "غير محدد",
+      render: (categoryId) => categoryMap[categoryId] || "Unspecified",
     },
     {
-      title: "الوسم",
-      dataIndex: "tag",
-      key: "tag",
-    },
-    {
-      title: "الإجراءات",
+      title: "Actions",
       key: "actions",
       render: (_, record) => (
         <>
-          <Button type="link" onClick={() => showEditModal(record)}>
-            تعديل
-          </Button>
           <Popconfirm
-            title="هل أنت متأكد أنك تريد حذف هذا المنتج؟"
+            title="Are you sure you want to delete this product?"
             onConfirm={() => handleDelete(record.id)}
-            okText="نعم"
-            cancelText="لا"
+            okText="Yes"
+            cancelText="No"
           >
-            <Button type="link">حذف</Button>
+            <Button type="link">Delete</Button>
           </Popconfirm>
         </>
       ),
@@ -129,49 +144,92 @@ const Products = () => {
 
   return (
     <div>
-      <Title level={3}>المنتجات</Title>
+      <Title level={3}>Products</Title>
       <Button
         type="primary"
         onClick={showAddModal}
         style={{ marginBottom: "16px" }}
       >
-        إضافة منتج
+        Add Product
       </Button>
       <Table columns={columns} dataSource={products} rowKey="id" />
       <Modal
-        title={editProduct ? "تعديل المنتج" : "إضافة منتج"}
+        title={editProduct ? "Edit Product" : "Add Product"}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={() => setIsModalVisible(false)}
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            label="الاسم"
-            name="name"
-            rules={[{ required: true, message: "الرجاء إدخال اسم المنتج!" }]}
+            label="Image"
+            name="image"
+            rules={[{ required: true, message: "Please upload an image!" }]}
+          >
+            <Upload
+              beforeUpload={() => false}
+              fileList={fileList}
+              onChange={handleUploadChange}
+              listType="picture"
+              maxCount={1}
+            >
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            label="English Name"
+            name="en_name"
+            rules={[
+              { required: true, message: "Please enter the English name!" },
+            ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="العدد"
-            name="count"
-            rules={[{ required: true, message: "الرجاء إدخال عدد المنتج!" }]}
+            label="Russian Name"
+            name="rs_name"
+            rules={[
+              { required: true, message: "Please enter the Russian name!" },
+            ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="رابط الصورة"
-            name="img"
-            rules={[{ required: true, message: "الرجاء إدخال رابط الصورة!" }]}
+            label="English Description"
+            name="en_desc"
+            rules={[
+              {
+                required: true,
+                message: "Please enter the English description!",
+              },
+            ]}
           >
-            <Input />
+            <Input.TextArea rows={4} />
           </Form.Item>
           <Form.Item
-            label="التصنيف"
+            label="Russian Description"
+            name="rs_desc"
+            rules={[
+              {
+                required: true,
+                message: "Please enter the Russian description!",
+              },
+            ]}
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item
+            label="Price"
+            name="price"
+            rules={[{ required: true, message: "Please enter the price!" }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="Category"
             name="category_id"
-            rules={[{ required: true, message: "الرجاء إدخال التصنيف!" }]}
+            rules={[{ required: true, message: "Please select a category!" }]}
           >
-            <Select placeholder="حدد التصنيف">
+            <Select placeholder="Select a category">
               {categories.map((category) => (
                 <Option key={category.id} value={category.id}>
                   {category.name}
@@ -179,12 +237,8 @@ const Products = () => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item
-            label="الوسم"
-            name="tag"
-            rules={[{ required: true, message: "الرجاء إدخال الوسم!" }]}
-          >
-            <Input />
+          <Form.Item name="homepage" valuePropName="checked">
+            <Checkbox>Display on Homepage</Checkbox>
           </Form.Item>
         </Form>
       </Modal>

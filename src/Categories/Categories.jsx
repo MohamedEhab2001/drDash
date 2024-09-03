@@ -58,10 +58,10 @@ const Categories = () => {
 
   const handleDelete = (id) => {
     Modal.confirm({
-      title: "هل أنت متأكد أنك تريد حذف هذه الفئة؟",
-      content: "بمجرد الحذف، لا يمكن استرجاع هذه الفئة.",
-      okText: "نعم",
-      cancelText: "لا",
+      title: "Are you sure you want to delete this category?",
+      content: "Once deleted, you will not be able to recover this category.",
+      okText: "Yes",
+      cancelText: "No",
       onOk: () => {
         deleteCategory(id);
       },
@@ -71,14 +71,18 @@ const Categories = () => {
   if (loading) return <Spin size="large" />;
   if (error)
     return (
-      <Alert message="خطأ" description="فشل في تحميل الفئات." type="error" />
+      <Alert
+        message="Error"
+        description="Failed to load categories."
+        type="error"
+      />
     );
 
   return (
     <div>
-      <Title level={3}>الفئات</Title>
+      <Title level={3}>Categories</Title>
       <Button type="primary" onClick={showAddModal}>
-        إضافة فئة
+        Add Category
       </Button>
       <List
         itemLayout="horizontal"
@@ -86,16 +90,16 @@ const Categories = () => {
         renderItem={(category) => (
           <List.Item
             actions={[
-              <Button type="link" onClick={() => showEditModal(category)}>
-                تعديل
-              </Button>,
+              // <Button type="link" onClick={() => showEditModal(category)}>
+              //   Edit
+              // </Button>,
               <Popconfirm
-                title="هل أنت متأكد أنك تريد حذف هذه الفئة؟"
+                title="Are you sure you want to delete this category?"
                 onConfirm={() => handleDelete(category.id)}
-                okText="نعم"
-                cancelText="لا"
+                okText="Yes"
+                cancelText="No"
               >
-                <Button type="link">حذف</Button>
+                <Button type="link">Delete</Button>
               </Popconfirm>,
             ]}
           >
@@ -104,26 +108,33 @@ const Categories = () => {
         )}
       />
       <Modal
-        title={editCategory ? "تعديل الفئة" : "إضافة فئة"}
+        title={editCategory ? "Edit Category" : "Add Category"}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={() => setIsModalVisible(false)}
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            label="الاسم"
+            label="Name"
             name="name"
-            rules={[{ required: true, message: "الرجاء إدخال اسم الفئة!" }]}
+            rules={[
+              { required: true, message: "Please enter the category name!" },
+            ]}
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="الوصف"
+          {/* <Form.Item
+            label="Description"
             name="desc"
-            rules={[{ required: true, message: "الرجاء إدخال وصف الفئة!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please enter the category description!",
+              },
+            ]}
           >
             <Input.TextArea rows={4} />
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </Modal>
     </div>

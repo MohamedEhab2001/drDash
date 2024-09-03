@@ -1,7 +1,6 @@
 // Dashboard.jsx
 import React from "react";
 import { Tabs, Layout } from "antd";
-import Home from "./Home/Home";
 import Categories from "./Categories/Categories";
 import Products from "./Products/Products";
 
@@ -18,9 +17,6 @@ const Dashboard = () => {
       </Header>
       <Content style={{ padding: "24px", background: "#fff", flex: 1 }}>
         <Tabs defaultActiveKey="1">
-          <TabPane tab="Home" key="1">
-            <Home />
-          </TabPane>
           <TabPane tab="Categories" key="2">
             <Categories />
           </TabPane>
@@ -30,7 +26,7 @@ const Dashboard = () => {
         </Tabs>
       </Content>
       <Footer style={{ textAlign: "center" }}>
-        Dolphin ©2024 Created by VistaWeb - 01027708044
+        Dr/Elsayed ©2024 Created by VistaWeb - 01027708044
       </Footer>
     </Layout>
   );
