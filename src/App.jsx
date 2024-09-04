@@ -1,30 +1,30 @@
 // App.jsx
 import React, { createContext, useContext } from "react";
-import { useContentHook, useCategory, useProduct } from "./ServerHooks";
+import { useDaystHook, useCategory, useProduct } from "./ServerHooks";
 import Dashboard from "./Dashboard";
 
-const ContentContext = createContext();
+const DaysContext = createContext();
 const CategoryContext = createContext();
 const ProductContext = createContext();
 
 const App = () => {
-  const { data, loading, error } = useContentHook();
+  const DaysContextData = useDaystHook();
   const categoryContext = useCategory();
   const productData = useProduct();
 
   return (
-    <ContentContext.Provider value={{ data, loading, error }}>
+    <DaysContext.Provider value={DaysContextData}>
       <CategoryContext.Provider value={categoryContext}>
         <ProductContext.Provider value={productData}>
           <Dashboard />
         </ProductContext.Provider>
       </CategoryContext.Provider>
-    </ContentContext.Provider>
+    </DaysContext.Provider>
   );
 };
 
 // Custom hooks to use contexts
-export const useContentContext = () => useContext(ContentContext);
+export const useDaysContext = () => useContext(DaysContext);
 export const useCategoryContext = () => useContext(CategoryContext);
 export const useProductContext = () => useContext(ProductContext);
 

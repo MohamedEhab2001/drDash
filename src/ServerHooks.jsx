@@ -2,7 +2,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const baseUrl = "https://ac2f-197-43-66-245.ngrok-free.app";
+
+const baseUrl = "https://dr.daimooma.com"
+//const baseUrl = "http://localhost:7000";
 
 export const useProduct = () => {
   const [products, setProducts] = useState([]);
@@ -117,7 +119,7 @@ export const useCategory = () => {
 };
 
 // Hook to fetch content data
-export const useContentHook = () => {
+export const useDaystHook = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -125,7 +127,7 @@ export const useContentHook = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/content`);
+        const response = await axios.get(`${baseUrl}/days`);
         setData(response.data);
       } catch (err) {
         setError(err);
@@ -137,8 +139,38 @@ export const useContentHook = () => {
     fetchData();
   }, []);
 
-  return { data, loading, error };
+  const addDay = async (day, hours) => {
+    try {
+      const response = await axios.post(`${baseUrl}/days`, { day, hours });
+      setData((prevData) => [...prevData, response.data]);
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const deleteDay = async (id) => {
+    try {
+      await axios.delete(`${baseUrl}/days/${id}`);
+      setData((prevData) => prevData.filter((day) => day.id !== id));
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const updateDay = async (id, updatedDay) => {
+    try {
+      const response = await axios.put(`${baseUrl}/days/${id}`, updatedDay);
+      setData((prevData) =>
+        prevData.map((day) => (day.id === id ? response.data : day))
+      );
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  return { data, loading, error, addDay, deleteDay, updateDay };
 };
+
 
 // Hook to update content data
 export const useContentUpdate = () => {

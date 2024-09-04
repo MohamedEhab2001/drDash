@@ -3,6 +3,7 @@ import React from "react";
 import { Tabs, Layout } from "antd";
 import Categories from "./Categories/Categories";
 import Products from "./Products/Products";
+import CContent from "./Content";
 
 const { Content, Header, Footer } = Layout;
 const { TabPane } = Tabs;
@@ -17,6 +18,9 @@ const Dashboard = () => {
       </Header>
       <Content style={{ padding: "24px", background: "#fff", flex: 1 }}>
         <Tabs defaultActiveKey="1">
+          <TabPane tab="Opening hours" key="1">
+            <CContent />
+          </TabPane>
           <TabPane tab="Categories" key="2">
             <Categories />
           </TabPane>
