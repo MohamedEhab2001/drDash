@@ -2,8 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
-const baseUrl = "https://dr.daimooma.com"
+const baseUrl = "https://dr.daimooma.com";
 //const baseUrl = "http://localhost:7000";
 
 export const useProduct = () => {
@@ -171,7 +170,6 @@ export const useDaystHook = () => {
   return { data, loading, error, addDay, deleteDay, updateDay };
 };
 
-
 // Hook to update content data
 export const useContentUpdate = () => {
   const updateContent = async (data, updatedContent) => {
@@ -187,4 +185,27 @@ export const useContentUpdate = () => {
   };
 
   return { updateContent };
+};
+
+// Hook to fetch content data
+export const useUsagetHook = () => {
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/usage`);
+      setData(response.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return { data, loading, error };
 };
