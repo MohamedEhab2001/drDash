@@ -11,10 +11,6 @@ const { TabPane } = Tabs;
 
 const Dashboard = () => {
   const { usageData } = useContentContext();
-  console.log(
-    "Usage Data:",
-    JSON.stringify(usageData.data.storageUsageGB, null, 2)
-  );
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -27,11 +23,7 @@ const Dashboard = () => {
           }}
         >
           <h2>لوحة التحكم</h2>
-          <div>
-            <h2>
-              استهلاك السحابة : {usageData?.data?.storageUsageGB} جيجا بايت
-            </h2>
-          </div>
+          <div></div>
         </div>
       </Header>
       <Content style={{ padding: "24px", background: "#fff", flex: 1 }}>
@@ -44,6 +36,11 @@ const Dashboard = () => {
           </TabPane>
           <TabPane tab="Products" key="3">
             <Products />
+          </TabPane>
+          <TabPane tab="Cloud" key="4">
+            <h2>
+              استهلاك السحابة : {usageData?.data?.storageUsageGB} جيجا بايت
+            </h2>
           </TabPane>
         </Tabs>
       </Content>
