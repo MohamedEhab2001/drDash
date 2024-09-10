@@ -38,4 +38,5 @@ export const useCategoryContext = () => useContext(CategoryContext);
 export const useProductContext = () => useContext(ProductContext);
 export const useContentContext = () => useContext(ContentContext);
 
+
 export default App;
